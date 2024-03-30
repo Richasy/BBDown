@@ -1,7 +1,9 @@
-[![img](https://img.shields.io/github/stars/nilaoda/BBDown?label=%E7%82%B9%E8%B5%9E)](https://github.com/nilaoda/BBDown)  [![img](https://img.shields.io/github/last-commit/nilaoda/BBDown?label=%E6%9C%80%E8%BF%91%E6%8F%90%E4%BA%A4)](https://github.com/nilaoda/BBDown)  [![img](https://img.shields.io/github/release/nilaoda/BBDown?label=%E6%9C%80%E6%96%B0%E7%89%88%E6%9C%AC)](https://github.com/nilaoda/BBDown/releases)  [![img](https://img.shields.io/github/license/nilaoda/BBDown?label=%E8%AE%B8%E5%8F%AF%E8%AF%81)](https://github.com/nilaoda/BBDown)  [![Build Latest](https://github.com/nilaoda/BBDown/actions/workflows/build_latest.yml/badge.svg)](https://github.com/nilaoda/BBDown/actions/workflows/build_latest.yml)
+[![img](https://img.shields.io/github/stars/Richasy/BBDown?label=%E7%82%B9%E8%B5%9E)](https://github.com/Richasy/BBDown)  [![img](https://img.shields.io/github/last-commit/Richasy/BBDown?label=%E6%9C%80%E8%BF%91%E6%8F%90%E4%BA%A4)](https://github.com/Richasy/BBDown)  [![img](https://img.shields.io/github/release/Richasy/BBDown?label=%E6%9C%80%E6%96%B0%E7%89%88%E6%9C%AC)](https://github.com/Richasy/BBDown/releases)  [![img](https://img.shields.io/github/license/Richasy/BBDown?label=%E8%AE%B8%E5%8F%AF%E8%AF%81)](https://github.com/Richasy/BBDown)  [![Build Latest](https://github.com/Richasy/BBDown/actions/workflows/build_latest.yml/badge.svg)](https://github.com/Richasy/BBDown/actions/workflows/build_latest.yml)
 
 # BBDown
 一款命令行式哔哩哔哩下载器. Bilibili Downloader.
+
+> 原仓库：[Richasy/BBDown](https://github.com/nilaoda/BBDown)，本仓库基于 [哔哩助理](https://github.com/Richasy/Bili.Copilot) 的需求二次开发
 
 # 注意
 本软件混流时需要外部程序：
@@ -10,22 +12,33 @@
 * 杜比视界：ffmpeg5.0以上或新版mp4box.
 
 # 快速开始
-本软件已经以 [Dotnet Tool](https://www.nuget.org/packages/BBDown/) 形式发布  
 
-如果你本地有dotnet环境，使用如下命令即可安装使用
-```
-dotnet tool install --global BBDown
-```
+## 前置环境
 
-如果需要更新bbdown，使用如下命令
-```
-dotnet tool update --global BBDown
-```
+目前应用已更新至 .NET8，如果你的设备的 .NET 版本较老，请在 [.NET 8](https://dotnet.microsoft.com/zh-cn/download/dotnet/8.0) 处下载最新的 .NET 8.0 运行时环境。
+
+或者你可以简单的在 PowerShell 中输入 `winget install Microsoft.DotNet.DesktopRuntime.8` 来快速安装 .NET8 桌面运行时环境。
+
+为了确定你当前设备的 .NET 版本，请在 PowerShell 中输入 `dotnet --version`，如果是 8.0，则表示你已具备运行时环境。
+
+## 安装 BBDown 及 FFmpeg
+
+这里准备了一个安装脚本，可 [点击下载](https://github.com/Richasy/BBDown/releases/download/v0.2403.1.0/install-bbdown.ps1).
+
+下载后，右键单击该 ps1 脚本，选择 `使用 PowerShell 运行`，并允许执行。
+
+该脚本是一个 PowerShell 执行脚本，它做两件事：
+
+1. 检查当前系统环境是否存在 BBDown 命令，如果不存在，那就从本仓库下载最新版本，并解压至 `%USER_PROFILE%\BBDown` 目录。
+2. 检查当前系统环境是否存在 FFmpeg 命令，BBDown 依赖 FFmpeg 进行音视频混流，如果不存在，那就从 [BtbN/FFmpeg-Builds](https://github.com/BtbN/FFmpeg-Builds/releases) 下载最新的 win-x64 版本，并解压至 `%USER_PROFILE%\ffmpeg` 目录下。
+
+当脚本执行完成后，你可以重启哔哩助理，此时应该就可以解锁下载功能了。
 
 # 下载
-Release版本：https://github.com/nilaoda/BBDown/releases
 
-自动构建的测试版本：https://github.com/nilaoda/BBDown/actions
+Release版本：https://github.com/Richasy/BBDown/releases
+
+自动构建的测试版本：https://github.com/Richasy/BBDown/actions
 
 # 开始使用
 目前命令行参数支持情况
@@ -220,7 +233,7 @@ BBDown logintv
 ```
 然后按照提示操作
  
-*PS: 如果登录报错`The type initializer for 'Gdip' threw an exception`，请参考 [#37](https://github.com/nilaoda/BBDown/issues/37) 解决*
+*PS: 如果登录报错`The type initializer for 'Gdip' threw an exception`，请参考 [#37](https://github.com/Richasy/BBDown/issues/37) 解决*
 
 手动加载网页cookie：
 ```
@@ -238,7 +251,7 @@ BBDown -tv -token "******" "https://www.bilibili.com/video/BV1qt4y1X7TW"
 
 ---
 
-> 根据 [#123](https://github.com/nilaoda/BBDown/issues/123#issuecomment-877583825) ，可以填写TV登录产生的`access_token`来给APP接口使用。可复制`BBDownTV.data`到`BBDownApp.data`使程序自动读取.
+> 根据 [#123](https://github.com/Richasy/BBDown/issues/123#issuecomment-877583825) ，可以填写TV登录产生的`access_token`来给APP接口使用。可复制`BBDownTV.data`到`BBDownApp.data`使程序自动读取.
 
 目前程序无法自动获取鉴权信息，推荐通过**抓包**来获取.
 
