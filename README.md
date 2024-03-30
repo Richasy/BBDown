@@ -3,7 +3,7 @@
 # BBDown
 一款命令行式哔哩哔哩下载器. Bilibili Downloader.
 
-> 原仓库：[Richasy/BBDown](https://github.com/nilaoda/BBDown)，本仓库基于 [哔哩助理](https://github.com/Richasy/Bili.Copilot) 的需求二次开发
+> 原仓库：[nilaoda/BBDown](https://github.com/nilaoda/BBDown)，本仓库基于 [哔哩助理](https://github.com/Richasy/Bili.Copilot) 的需求二次开发
 
 # 注意
 本软件混流时需要外部程序：
