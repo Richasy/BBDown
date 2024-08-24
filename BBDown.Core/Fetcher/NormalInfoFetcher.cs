@@ -1,4 +1,6 @@
 ﻿using BBDown.Core.Entity;
+using Richasy.BiliKernel.Bili.Media;
+using Richasy.BiliKernel.Models.Media;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -11,36 +13,33 @@ namespace BBDown.Core.Fetcher
     {
         public async Task<VInfo> FetchAsync(string id)
         {
-            string api = $"https://api.bilibili.com/x/web-interface/view?aid={id}";
-            string json = await GetWebSourceAsync(api);
-            using var infoJson = JsonDocument.Parse(json);
-            var data = infoJson.RootElement.GetProperty("data");
-            string title = data.GetProperty("title").ToString();
-            string desc = data.GetProperty("desc").ToString();
-            string pic = data.GetProperty("pic").ToString();
-            var owner = data.GetProperty("owner");
-            string ownerMid = owner.GetProperty("mid").ToString();
-            string ownerName = owner.GetProperty("name").ToString();
-            long pubTime = data.GetProperty("pubdate").GetInt64();
+            var videoInfo = await Config.Kernel.GetRequiredService<IPlayerService>().GetVideoPageDetailAsync(new Richasy.BiliKernel.Models.Media.MediaIdentifier(id, default, default));
+            var info = videoInfo.Information;
+            string title = info.Identifier.Title;
+            string desc = info.GetExtensionIfNotNull<string>(VideoExtensionDataId.Description);
+            string pic = info.Identifier.Cover.Uri.ToString();
+            string ownerMid = info.Publisher.User.Id;
+            string ownerName = info.Publisher.User.Name;
+            long pubTime = info.PublishTime.Value.ToUnixTimeSeconds();
             bool bangumi = false;
-            var bvid = data.GetProperty("bvid").ToString();
-            var cid = data.GetProperty("cid").GetInt64();
+            var bvid = info.BvId;
+            var cid = info.GetExtensionIfNotNull<long>(VideoExtensionDataId.Cid);
 
             // 互动视频 1:是 0:否
-            var isSteinGate = data.GetProperty("rights").GetProperty("is_stein_gate").GetInt16();
+            var isSteinGate = videoInfo.IsInteractiveVideo;
 
             // 分p信息
             List<Page> pagesInfo = new();
-            var pages = data.GetProperty("pages").EnumerateArray().ToList();
+            var pages = videoInfo.Parts;
             foreach (var page in pages)
             {
-                Page p = new(page.GetProperty("page").GetInt32(),
+                Page p = new(page.Index,
                     id,
-                    page.GetProperty("cid").ToString(),
+                    page.Identifier.Id,
                     "", //epid
-                    page.GetProperty("part").ToString().Trim(),
-                    page.GetProperty("duration").GetInt32(),
-                    page.GetProperty("dimension").GetProperty("width").ToString() + "x" + page.GetProperty("dimension").GetProperty("height").ToString(),
+                    page.Identifier.Title,
+                    page.Duration,
+                    "",
                     pubTime, //分p视频没有发布时间
                     "",
                     "",
@@ -50,7 +49,7 @@ namespace BBDown.Core.Fetcher
                 pagesInfo.Add(p);
             }
 
-            if (isSteinGate == 1) // 互动视频获取分P信息
+            if (isSteinGate) // 互动视频获取分P信息
             {
                 var playerSoApi = $"https://api.bilibili.com/x/player.so?bvid={bvid}&id=cid:{cid}";
                 var playerSoText = await GetWebSourceAsync(playerSoApi);
@@ -97,22 +96,7 @@ namespace BBDown.Core.Fetcher
                 }
             }
 
-            try
-            {
-                if (data.GetProperty("redirect_url").ToString().Contains("bangumi"))
-                {
-                    bangumi = true;
-                    string epId = EpIdRegex().Match(data.GetProperty("redirect_url").ToString()).Groups[1].Value;
-                    //番剧内容通常不会有分P，如果有分P则不需要epId参数
-                    if (pages.Count == 1)
-                    {
-                        pagesInfo.ForEach(p => p.epid = epId);
-                    }
-                }
-            }
-            catch { }
-
-            var info = new VInfo
+            var vinfo = new VInfo
             {
                 Title = title.Trim(),
                 Desc = desc.Trim(),
@@ -120,10 +104,10 @@ namespace BBDown.Core.Fetcher
                 PubTime = pubTime,
                 PagesInfo = pagesInfo,
                 IsBangumi = bangumi,
-                IsSteinGate = isSteinGate == 1
+                IsSteinGate = isSteinGate
             };
 
-            return info;
+            return vinfo;
         }
 
         [GeneratedRegex("ep(\\d+)")]

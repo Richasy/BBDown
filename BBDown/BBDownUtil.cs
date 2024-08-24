@@ -560,25 +560,6 @@ namespace BBDown
             return tmp.ToString();
         }
 
-        public static async Task<bool> CheckLogin(string cookie)
-        {
-            try
-            {
-                var api = "https://api.bilibili.com/x/web-interface/nav";
-                var source = await GetWebSourceAsync(api);
-                var json = JsonDocument.Parse(source).RootElement;
-                var is_login = json.GetProperty("data").GetProperty("isLogin").GetBoolean();
-                var wbi_img = json.GetProperty("data").GetProperty("wbi_img");
-                Core.Config.WBI = GetMixinKey(RSubString(wbi_img.GetProperty("img_url").GetString()) + RSubString(wbi_img.GetProperty("sub_url").GetString()));
-                LogDebug("wbi: {0}", Core.Config.WBI);
-                return is_login;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
         [GeneratedRegex("av(\\d+)")]
         private static partial Regex AvRegex();
         [GeneratedRegex("[Bb][Vv]1(\\w+)")]

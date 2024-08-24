@@ -20,11 +20,17 @@ using BBDown.Core.Util;
 using System.Text.Json.Serialization;
 using System.CommandLine.Builder;
 using BBDown.Core.Entity;
+using Richasy.BiliKernel;
+using Richasy.BiliKernel.Authorizers.TV;
+using Microsoft.Extensions.DependencyInjection;
+using Richasy.BiliKernel.Bili.Authorization;
 
 namespace BBDown
 {
     partial class Program
     {
+        public static Kernel BiliKernel { get; private set; }
+
         private static readonly string BACKUP_HOST = "upos-sz-mirrorcoso1.bilivideo.com";
         public static string SinglePageDefaultSavePath { get; set; } = "<videoTitle>";
         public static string MultiPageDefaultSavePath { get; set; } = "<videoTitle>/[P<pageNumberWithZero>]<pageTitle>";
@@ -47,6 +53,21 @@ namespace BBDown
                 LogError($"格式化日期出错: {ex.Message}");
                 return ts.ToString();
             }
+        }
+
+        private static void InitializeKernel(string cookies, string token)
+        {
+            var cookieResovler = new CookieResolver(cookies);
+            var tokenResolver = new TokenResolver(token);
+            var builder = Kernel.CreateBuilder()
+                .AddHttpClient()
+                .AddBasicAuthenticator()
+                .AddTVAuthentication()
+                .UseDefaultAuthenticationService<TVAuthenticationService>()
+                .AddPlayerService();
+            builder.Services.AddSingleton<IBiliCookiesResolver>(cookieResovler);
+            builder.Services.AddSingleton<IBiliTokenResolver>(tokenResolver);
+            BiliKernel = builder.Build();
         }
 
         [JsonSerializable(typeof(MyOption))]
@@ -168,22 +189,18 @@ namespace BBDown
 
         private static Task RunApp(MyOption myOption)
         {
-            //检测更新
-            CheckUpdateAsync();
             return DoWorkAsync(myOption);
         }
 
         private static void StartServer(string? listenUrl)
         {
             var defaultListenUrl = "http://0.0.0.0:23333";
-            //检测更新
-            CheckUpdateAsync();
             var server = new BBDownApiServer();
             server.SetUpServer();
             server.Run(string.IsNullOrEmpty(listenUrl) ? defaultListenUrl : listenUrl);
         }
 
-        public static (Dictionary<string, byte> encodingPriority, Dictionary<string, int> dfnPriority, string? firstEncoding,
+        public static (Dictionary<string, byte> encodingPriority, Dictionary<int, int> dfnPriority, string? firstEncoding,
             bool downloadDanmaku, string input, string savePathFormat, string lang, string aidOri, int delay)
         SetUpWork(MyOption myOption)
         {
@@ -218,6 +235,8 @@ namespace BBDown
             Config.AREA = myOption.Area;
             Config.COOKIE = myOption.Cookie;
             Config.TOKEN = myOption.AccessToken.Replace("access_token=", "");
+            InitializeKernel(Config.COOKIE, Config.TOKEN);
+            Config.Kernel = BiliKernel;
 
             LogDebug("AppDirectory: {0}", APP_DIR);
             LogDebug("运行参数：{0}", JsonSerializer.Serialize(myOption, MyOptionJsonContext.Default.MyOption));
@@ -226,21 +245,6 @@ namespace BBDown
 
         public static async Task<(string fetchedAid, VInfo vInfo, string apiType)> GetVideoInfoAsync(MyOption myOption, string aidOri, string input)
         {
-            Log("检测账号登录...");
-
-            // 加载认证信息
-            LoadCredentials(myOption);
-
-            // 检测是否登录了账号
-            bool is_login = await CheckLogin(Config.COOKIE);
-            if (!myOption.UseIntlApi && !myOption.UseTvApi && Config.AREA == "")
-            {
-                if (!is_login)
-                {
-                    LogWarn("你尚未登录B站账号, 解析可能受到限制");
-                }
-            }
-
             Log("获取aid...");
             aidOri = await GetAvIdAsync(input);
             Log("获取aid结束: " + aidOri);
@@ -320,7 +324,7 @@ namespace BBDown
             return (aidOri, vInfo, apiType);
         }
 
-        public static async Task DownloadPagesAsync(MyOption myOption, VInfo vInfo, Dictionary<string, byte> encodingPriority, Dictionary<string, int> dfnPriority,
+        public static async Task DownloadPagesAsync(MyOption myOption, VInfo vInfo, Dictionary<string, byte> encodingPriority, Dictionary<int, int> dfnPriority,
             string? firstEncoding, bool downloadDanmaku, string input, string savePathFormat, string lang, string aidOri, int delay, string apiType, DownloadTask? relatedTask = null)
         {
             List<Page> pagesInfo = vInfo.PagesInfo;
@@ -377,7 +381,7 @@ namespace BBDown
             Log("任务完成");
         }
 
-        private static async Task DownloadPageAsync(Page p, MyOption myOption, VInfo vInfo, List<Page> selectedPagesInfo, Dictionary<string, byte> encodingPriority, Dictionary<string, int> dfnPriority,
+        private static async Task DownloadPageAsync(Page p, MyOption myOption, VInfo vInfo, List<Page> selectedPagesInfo, Dictionary<string, byte> encodingPriority, Dictionary<int, int> dfnPriority,
             string? firstEncoding, bool downloadDanmaku, string input, string savePathFormat, string lang, string aidOri, string apiType, DownloadTask? relatedTask = null)
         {
             string desc = string.IsNullOrEmpty(p.desc) ? vInfo.Desc : p.desc;
@@ -806,18 +810,18 @@ namespace BBDown
             }
         }
 
-        private static List<Video> SortTracks(List<Video> videoTracks, Dictionary<string, int> dfnPriority, Dictionary<string, byte> encodingPriority, bool videoAscending)
+        private static List<Video> SortTracks(List<Video> videoTracks, Dictionary<int, int> dfnPriority, Dictionary<string, byte> encodingPriority, bool videoAscending)
         {
             //用户同时输入了自定义分辨率优先级和自定义编码优先级, 则根据输入顺序依次进行排序
             return dfnPriority.Any() && encodingPriority.Any() && Environment.CommandLine.IndexOf("--encoding-priority") < Environment.CommandLine.IndexOf("--dfn-priority")
                 ? videoTracks
                     .OrderBy(v => encodingPriority.TryGetValue(v.codecs, out byte i) ? i : 100)
-                    .ThenBy(v => dfnPriority.TryGetValue(v.dfn, out int i) ? i : 100)
+                    .ThenBy(v => dfnPriority.TryGetValue(Convert.ToInt32(v.id), out int i) ? i : 100)
                     .ThenByDescending(v => Convert.ToInt32(v.id))
                     .ThenBy(v => videoAscending ? v.bandwith : -v.bandwith)
                     .ToList()
                 : videoTracks
-                    .OrderBy(v => dfnPriority.TryGetValue(v.dfn, out int i) ? i : 100)
+                    .OrderBy(v => dfnPriority.TryGetValue(Convert.ToInt32(v.id), out int i) ? i : 100)
                     .ThenBy(v => encodingPriority.TryGetValue(v.codecs, out byte i) ? i : 100)
                     .ThenByDescending(v => Convert.ToInt32(v.id))
                     .ThenBy(v => videoAscending ? v.bandwith : -v.bandwith)

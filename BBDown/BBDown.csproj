@@ -22,6 +22,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BBDown.Core\BBDown.Core.csproj" />
+    <ProjectReference Include="..\Libs\bili-kernel\src\Authorizers\Authorizers.Tv\Authorizers.Tv.csproj" />
+    <ProjectReference Include="..\Libs\bili-kernel\src\BiliKernel.Abstractions\BiliKernel.Abstractions.csproj" />
+    <ProjectReference Include="..\Libs\bili-kernel\src\BiliKernel.Core\BiliKernel.Core.csproj" />
+    <ProjectReference Include="..\Libs\bili-kernel\src\Services\Services.Media\Services.Media.csproj" />
   </ItemGroup>
 
 </Project>

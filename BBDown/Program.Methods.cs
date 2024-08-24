@@ -98,16 +98,16 @@ namespace BBDown
         /// </summary>
         /// <param name="myOption"></param>
         /// <returns></returns>
-        private static Dictionary<string, int> ParseDfnPriority(MyOption myOption)
+        private static Dictionary<int, int> ParseDfnPriority(MyOption myOption)
         {
-            var dfnPriority = new Dictionary<string, int>();
+            var dfnPriority = new Dictionary<int, int>();
             if (myOption.DfnPriority != null)
             {
-                var dfnPriorityTemp = myOption.DfnPriority.Replace("，", ",").Split(',').Select(s => s.ToUpper().Trim()).Where(s => !string.IsNullOrEmpty(s));
+                var dfnPriorityTemp = myOption.DfnPriority.Replace("，", ",").Split(',').Select(s => Convert.ToInt32(s));
                 int index = 0;
-                foreach (string dfn in dfnPriorityTemp)
+                foreach (var dfn in dfnPriorityTemp)
                 {
-                    if (dfnPriority.ContainsKey(dfn)) { continue; }
+                    if (dfnPriority.ContainsValue(dfn)) { continue; }
                     dfnPriority[dfn] = index;
                     index++;
                 }

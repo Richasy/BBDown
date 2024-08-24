@@ -7,6 +7,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BBDown", "BBDown\BBDown.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BBDown.Core", "BBDown.Core\BBDown.Core.csproj", "{932F1279-4AD3-4226-97C6-B0997B1568AC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{68648ED0-FC65-4A4E-9526-302245D48C8D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authorizers.Tv", "Libs\bili-kernel\src\Authorizers\Authorizers.Tv\Authorizers.Tv.csproj", "{9F53B137-B968-41FB-BB59-77AB4EC1C90C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BiliKernel.Abstractions", "Libs\bili-kernel\src\BiliKernel.Abstractions\BiliKernel.Abstractions.csproj", "{9C4F9447-A7DB-42F2-9680-0EAF2D661EEF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BiliKernel.Core", "Libs\bili-kernel\src\BiliKernel.Core\BiliKernel.Core.csproj", "{24B3AA7B-DB97-4863-B5A5-358FB017A0A7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BiliKernel.Grpc", "Libs\bili-kernel\src\BiliKernel.Grpc\BiliKernel.Grpc.csproj", "{0CE7E499-EDF6-4E03-9D90-A3AE013BEE16}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services.Media", "Libs\bili-kernel\src\Services\Services.Media\Services.Media.csproj", "{2C3F7D08-E897-4699-80E7-19DD5E6235CC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,9 +33,36 @@ Global
 		{932F1279-4AD3-4226-97C6-B0997B1568AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{932F1279-4AD3-4226-97C6-B0997B1568AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{932F1279-4AD3-4226-97C6-B0997B1568AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F53B137-B968-41FB-BB59-77AB4EC1C90C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F53B137-B968-41FB-BB59-77AB4EC1C90C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F53B137-B968-41FB-BB59-77AB4EC1C90C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F53B137-B968-41FB-BB59-77AB4EC1C90C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C4F9447-A7DB-42F2-9680-0EAF2D661EEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C4F9447-A7DB-42F2-9680-0EAF2D661EEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C4F9447-A7DB-42F2-9680-0EAF2D661EEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C4F9447-A7DB-42F2-9680-0EAF2D661EEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24B3AA7B-DB97-4863-B5A5-358FB017A0A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24B3AA7B-DB97-4863-B5A5-358FB017A0A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24B3AA7B-DB97-4863-B5A5-358FB017A0A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24B3AA7B-DB97-4863-B5A5-358FB017A0A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CE7E499-EDF6-4E03-9D90-A3AE013BEE16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CE7E499-EDF6-4E03-9D90-A3AE013BEE16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CE7E499-EDF6-4E03-9D90-A3AE013BEE16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CE7E499-EDF6-4E03-9D90-A3AE013BEE16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C3F7D08-E897-4699-80E7-19DD5E6235CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C3F7D08-E897-4699-80E7-19DD5E6235CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C3F7D08-E897-4699-80E7-19DD5E6235CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C3F7D08-E897-4699-80E7-19DD5E6235CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9F53B137-B968-41FB-BB59-77AB4EC1C90C} = {68648ED0-FC65-4A4E-9526-302245D48C8D}
+		{9C4F9447-A7DB-42F2-9680-0EAF2D661EEF} = {68648ED0-FC65-4A4E-9526-302245D48C8D}
+		{24B3AA7B-DB97-4863-B5A5-358FB017A0A7} = {68648ED0-FC65-4A4E-9526-302245D48C8D}
+		{0CE7E499-EDF6-4E03-9D90-A3AE013BEE16} = {68648ED0-FC65-4A4E-9526-302245D48C8D}
+		{2C3F7D08-E897-4699-80E7-19DD5E6235CC} = {68648ED0-FC65-4A4E-9526-302245D48C8D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {17E08D9B-5969-4301-9674-ADB3EA8E5DF1}

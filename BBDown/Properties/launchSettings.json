@@ -2,6 +2,7 @@
   "profiles": {
     "BBDown": {
       "commandName": "Project",
+      "commandLineArgs": "-app --cookie \"SESSDATA=dff073a4%2C1739939105%2Cf7c5e081; bili_jct=77dfda0dbca6ac6e220d3b7d2874ce64; DedeUserID=5992670; DedeUserID__ckMd5=f81d3604c955ed17; sid=hfppg7ed\" -token \"46f74cd809a6eb102a74a08736ce3681\" -e avc --work-dir \"C:\\Users\\zrich\\Videos\\Bili Downloads\" --ffmpeg-path \"D:\\Projects\\Bili.Copilot\\src\\Desktop\\BiliCopilot.UI\\bin\\x64\\Debug\\net8.0-windows10.0.22621.0\\win-x64\\AppX\\Assets\\ffmpeg\\ffmpeg.exe\" -ua \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.1938.69\" -q \"4K 超清\" \"https://www.bilibili.com/bangumi/play/ep733319\"",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

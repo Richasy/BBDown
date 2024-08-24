@@ -7,6 +7,16 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using static BBDown.Core.Util.HTTPUtil;
 using static BBDown.Core.Logger;
+using Richasy.BiliKernel.Bili.Media;
+using Richasy.BiliKernel.Models.Media;
+using System.Data;
+using System.Runtime.CompilerServices;
+using Richasy.BiliKernel.Http;
+using Richasy.BiliKernel.Authenticator;
+using Richasy.BiliKernel.Bili;
+using System.Net.Http;
+using System.Threading;
+using Richasy.BiliKernel.Models;
 
 namespace BBDown.Core
 {
@@ -55,27 +65,51 @@ namespace BBDown.Core
         /// <returns></returns>
         public static async Task<string> DoReqAsync(string aid, string cid, string epId, string qn, bool bangumi, string encoding, string appkey = "")
         {
-
             var headers = GetHeader(appkey);
             LogDebug("App-Req-Headers: {0}", JsonSerializer.Serialize(headers, JsonContext.Default.DictionaryStringString));
             byte[] data;
+            var httpClient = Config.Kernel.GetRequiredService<BiliHttpClient>();
+            var authenticator = Config.Kernel.GetRequiredService<BasicAuthenticator>();
             // 只有pgc接口才有配音和片头尾信息
             if (bangumi)
             {
-                if (!(string.IsNullOrEmpty(encoding) || encoding == "HEVC"))
-                    LogWarn("APP的番剧不支持 HEVC 以外的编码");
-                var body = GetPayload(Convert.ToInt64(epId), Convert.ToInt64(cid), Convert.ToInt64(qn), PlayViewReq.Types.CodeType.Code265);
-                data = await GetPostResponseAsync(API2, body, headers);
+                var parameters = new Dictionary<string, string>
+                {
+                    { "fnver", "0" },
+                    { "cid", cid.ToString() },
+                    { "fourk", "1" },
+                    { "fnval", "4048" },
+                    { "qn", qn },
+                    { "oType", "json" },
+                    { "module", "bangumi" },
+                    { "season_type", bangumi?"4":"2" },
+                    { "ep_id", epId },
+                };
+                var request = BiliHttpClient.CreateRequest(HttpMethod.Get, new Uri(BiliApis.Pgc.PlayInformation()));
+                authenticator.AuthroizeRestRequest(request, parameters, new BasicAuthorizeExecutionSettings { ApiType = BiliApiType.Web });
+                var response = await httpClient.SendAsync(request);
+                var json = await response.ResponseMessage.Content.ReadAsStringAsync();
+                return json;
             }
             else
             {
-                var body = GetPayload(Convert.ToInt64(aid), Convert.ToInt64(cid), Convert.ToInt64(qn), GetVideoCodeType(encoding));
-                data = await GetPostResponseAsync(API, body, headers);
-            }
-            var resp = new MessageParser<PlayViewReply>(() => new PlayViewReply()).ParseFrom(ReadMessage(data));
+                var queryParameters = new Dictionary<string, string>
+                {
+                    { "fnver", "0" },
+                    { "cid", cid },
+                    { "fourk", "1" },
+                    { "fnval", "4048" },
+                    { "qn", qn },
+                    { "oType", "json" },
+                    { "avid", aid },
+                };
 
-            LogDebug("PlayViewReplyPlain: {0}", JsonSerializer.Serialize(resp, JsonContext.Default.PlayViewReply));
-            return ConvertToDashJson(resp);
+                var request = BiliHttpClient.CreateRequest(HttpMethod.Get, new Uri(BiliApis.Video.PlayInformation));
+                authenticator.AuthroizeRestRequest(request, queryParameters);
+                var response = await httpClient.SendAsync(request);
+                var json = await response.ResponseMessage.Content.ReadAsStringAsync();
+                return json;
+            }
         }
 
         /// <summary>

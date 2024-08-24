@@ -34,7 +34,7 @@ namespace BBDown
             using var httpRequestMessage = new HttpRequestMessage();
             if (!url.Contains("platform=android_tv_yst") && !url.Contains("platform=android"))
                 httpRequestMessage.Headers.TryAddWithoutValidation("Referer", "https://www.bilibili.com");
-            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", "Mozilla/5.0");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.1938.69");
             httpRequestMessage.Headers.TryAddWithoutValidation("Cookie", Core.Config.COOKIE);
             httpRequestMessage.Headers.Range = new(downloadedBytes, toPosition);
             httpRequestMessage.Headers.IfRange = lastTime != null ? new(lastTime.Value) : null;
@@ -193,7 +193,7 @@ namespace BBDown
             using var httpRequestMessage = new HttpRequestMessage();
             if (!url.Contains("platform=android_tv_yst") && !url.Contains("platform=android"))
                 httpRequestMessage.Headers.TryAddWithoutValidation("Referer", "https://www.bilibili.com");
-            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", "Mozilla/5.0");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.1938.69");
             httpRequestMessage.Headers.TryAddWithoutValidation("Cookie", Core.Config.COOKIE);
             httpRequestMessage.RequestUri = new(url);
             var response = (await AppHttpClient.SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead)).EnsureSuccessStatusCode();
