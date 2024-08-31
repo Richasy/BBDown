@@ -12,6 +12,7 @@
     <ToolCommandName>BBDown</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
     <Nullable>enable</Nullable>
+	<PublishAot>true</PublishAot>
   </PropertyGroup>
 
   <ItemGroup>

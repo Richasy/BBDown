@@ -69,7 +69,7 @@ namespace BBDown.Core
             LogDebug("App-Req-Headers: {0}", JsonSerializer.Serialize(headers, JsonContext.Default.DictionaryStringString));
             byte[] data;
             var httpClient = Config.Kernel.GetRequiredService<BiliHttpClient>();
-            var authenticator = Config.Kernel.GetRequiredService<BasicAuthenticator>();
+            var authenticator = Config.Kernel.GetRequiredService<BiliAuthenticator>();
             // 只有pgc接口才有配音和片头尾信息
             if (bangumi)
             {
@@ -86,7 +86,7 @@ namespace BBDown.Core
                     { "ep_id", epId },
                 };
                 var request = BiliHttpClient.CreateRequest(HttpMethod.Get, new Uri(BiliApis.Pgc.PlayInformation()));
-                authenticator.AuthroizeRestRequest(request, parameters, new BasicAuthorizeExecutionSettings { ApiType = BiliApiType.Web });
+                authenticator.AuthroizeRestRequest(request, parameters, new BiliAuthorizeExecutionSettings { ApiType = BiliApiType.Web });
                 var response = await httpClient.SendAsync(request);
                 var json = await response.ResponseMessage.Content.ReadAsStringAsync();
                 return json;

@@ -63,7 +63,6 @@ namespace BBDown
                 .AddHttpClient()
                 .AddBasicAuthenticator()
                 .AddTVAuthentication()
-                .UseDefaultAuthenticationService<TVAuthenticationService>()
                 .AddPlayerService();
             builder.Services.AddSingleton<IBiliCookiesResolver>(cookieResovler);
             builder.Services.AddSingleton<IBiliTokenResolver>(tokenResolver);
